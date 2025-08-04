@@ -1,9 +1,20 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import os
+import gdown  # for downloading from Google Drive
 
-# Load the trained model
-model = joblib.load("Model.h1")  
+# --- Load the trained model from Google Drive ---
+model_path = "Model.h1"
+
+if not os.path.exists(model_path):
+    file_id = "1vA0HTH7K60tU0gaqur0kM_xC_DbsNb41"  
+    url = f"https://drive.google.com/uc?id={file_id}"
+    gdown.download(url, model_path, quiet=False)
+
+# Load model
+model = joblib.load(model_path)
+
 st.title("HR Employee Promotion Predictor")
 st.markdown("Enter employee details to predict if they are likely to be promoted.")
 
@@ -62,7 +73,7 @@ user_input = pd.DataFrame([{
     'avg_training_score': avg_training_score
 }])
 
-# Final column order matching training
+# Ensure correct column order
 user_input = user_input[
     ['department', 'region', 'education', 'gender', 'recruitment_channel',
      'no_of_trainings', 'age', 'previous_year_rating', 'length_of_service',
@@ -73,7 +84,7 @@ user_input = user_input[
 if st.button("Predict Promotion"):
     try:
         prediction = model.predict(user_input)[0]
-        probability = model.predict_proba(user_input)[0][1]  # confidence of promotion (class 1)
+        probability = model.predict_proba(user_input)[0][1]
 
         if prediction == 1:
             st.success(f"✅ The employee is likely to be promoted. Confidence: {round(probability * 100, 2)}%")
@@ -81,5 +92,3 @@ if st.button("Predict Promotion"):
             st.error(f"❌ The employee is NOT likely to be promoted. Confidence: {round((1 - probability) * 100, 2)}%")
     except Exception as e:
         st.error(f"Prediction failed: {e}")
-
-
