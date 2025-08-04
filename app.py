@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # Load the trained model
-model = joblib.load("Model.h1")  
+model = joblib.load("Model.pk1")  
 st.title("HR Employee Promotion Predictor")
 st.markdown("Enter employee details to predict if they are likely to be promoted.")
 
@@ -81,3 +81,4 @@ if st.button("Predict Promotion"):
             st.error(f"❌ The employee is NOT likely to be promoted. Confidence: {round((1 - probability) * 100, 2)}%")
     except Exception as e:
         st.error(f"Prediction failed: {e}")
+
